@@ -171,6 +171,9 @@ struct ContentView: View {
             let squareLength = CGFloat.minimum(width, height)
             let screenHeight = height + barHeight
             
+            let bezierSize = CGSize(width: width, height: height - squareLength)
+            let bezierRect = CGRect(origin: .zero, size: bezierSize)
+            
             ZStack() {
                 if animateA {
                     FlushEffect(boxHeight: squareLength, offsetY: screenHeight, color: .green)
@@ -181,9 +184,9 @@ struct ContentView: View {
             .frame(width: width, height: screenHeight, alignment: .top)
             .ignoresSafeArea()
             .onAppear() {
-                animateShape(width: width, height: height - squareLength)
+                animateShape(bezierRect)
                 timer = Timer.scheduledTimer(withTimeInterval: flushSpeed, repeats: true) { _ in
-                    animateShape(width: width, height: height - squareLength)
+                    animateShape(bezierRect)
                 }
             }
         }
@@ -212,9 +215,8 @@ extension ContentView {
     private static let dCxMaxRate: CGFloat = 0.8
     private static let dC1xMaxRate: CGFloat = 0.6
     
-    func animateShape(width: CGFloat, height: CGFloat) {
-        let size = CGSize(width: width, height: height)
-        makePointsArray(CGRect(origin: CGPoint.zero, size: size), .bottom)
+    func animateShape(_ bezierRect: CGRect) {
+        makePointsArray(bezierRect)
         topScale = Self.inisialTopScale
         bottomScale = Self.inisialBottomScale
         
@@ -227,7 +229,7 @@ extension ContentView {
         }
     }
     
-    func makePointsArray(_ rect: CGRect, _ direction: TopBottom) {
+    func makePointsArray(_ rect: CGRect, _ direction: TopBottom = .bottom) {
         var points: [CGPoint] = []
         var c1s: [CGPoint] = []
         var c2s: [CGPoint] = []
